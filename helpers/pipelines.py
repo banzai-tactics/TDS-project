@@ -8,14 +8,15 @@ from helpers.models import models
 
 numerical_pipe = Pipeline([
     # ('imputer', SimpleImputer(missing_values=np.nan, strategy='mean')),
-    ('scaler', StandardScaler()), #.set_output(transform='pandas')
+    ('scaler', StandardScaler())#.set_output(transform='pandas')),
 ])
 
 categorical_pipe = Pipeline([
     # ('imputer', SimpleImputer(missing_values=np.nan, strategy='most_frequent')),
-    ('one_hot', OneHotEncoder(handle_unknown='ignore'))
+    ('one_hot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))#.set_output(transform='pandas'))
 ])
 
+# FOR NOW transforming by column type. can be a problem if numeric type is acctually categorical
 preprocessor = ColumnTransformer([
     ('numerical', numerical_pipe, make_column_selector(dtype_include=['int', 'float'])),
     ('categorical', categorical_pipe, make_column_selector(dtype_include=['object'])),

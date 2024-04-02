@@ -5,9 +5,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import get_scorer#roc_auc_score, accuracy_score, f1_score, 
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-from helpers import pipelines
-from helpers.models import parameters
-
 
 def preprocess_adult(df):
     df.replace('?', np.nan, inplace=True)
@@ -37,16 +34,22 @@ def evaluate_model(model, X_test, y_test, scoring):
     score = max(score_probas, score_preds)
     return score
 
-def fit_and_evaluate(data, target, scoring='roc_auc', test_size_proportion=0.33, verbosity=0):
+def fit_and_evaluate(X, y, search_estimators, search_params, scoring='roc_auc', test_size_proportion=0.33, verbosity=0):
     ''' fit and evaluate several models
     
     Parameters
     ----------
-    data : DataFrame
+    X : pd.DataFrame
         The data to fit the model to
 
-    target : str
-        The column name of the target column
+    y : pd.Series
+        The corresponding label for each sample in X
+
+    search_estimators : dict. <str, Pipeline/Model>
+        Dictionary whose keys are models name and values are a pipeline or model
+
+    search_params : dict. <str, dict <str, list>>
+        Dictionary whose keys are models name and values are dictionaries of possible parameters for the estimators
 
     scoring : str
         The scoring function to maximize in fit
@@ -65,18 +68,14 @@ def fit_and_evaluate(data, target, scoring='roc_auc', test_size_proportion=0.33,
     best_estimators: dict
         Dictionary whose keys are models names and values are the best scores of each model
     '''
-    X = data.drop(target, axis=1)
-    y = data[target]
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_proportion, random_state=42)
-
-    search_pipelines = pipelines.get_adult_pipelines()
 
     best_estimators = {}
     scores = {}
 
-    for n, pipe in search_pipelines.items():
-        clf = GridSearchCV(pipe, parameters[n], cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
+    for n, pipe in search_estimators.items():
+        clf = GridSearchCV(pipe, search_params[n], cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
         clf.fit(X_train, y_train)
         n_best_model = clf.best_estimator_
         score = evaluate_model(n_best_model, X_test, y_test, scoring)
