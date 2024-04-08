@@ -34,16 +34,24 @@ def evaluate_model(model, X_test, y_test, scoring):
     score = max(score_probas, score_preds)
     return score
 
-def fit_and_evaluate(X, y, search_estimators, search_params, scoring='roc_auc', test_size_proportion=0.33, verbosity=0):
+
+
+def fit_and_evaluate(X_train, y_train,X_test,y_test, search_estimators, search_params, scoring='roc_auc', test_size_proportion=0.33, verbosity=0):
     ''' fit and evaluate several models
     
     Parameters
     ----------
-    X : pd.DataFrame
+    X_train : pd.DataFrame
         The data to fit the model to
 
-    y : pd.Series
-        The corresponding label for each sample in X
+    y_train : pd.Series
+        The corresponding label for each sample in X_train
+
+    X_test : pd.DataFrame
+        The data to test the model fit
+
+    y_test : pd.Series
+        The corresponding label for each sample in X_test
 
     search_estimators : dict. <str, Pipeline/Model>
         Dictionary whose keys are models name and values are a pipeline or model
@@ -69,11 +77,10 @@ def fit_and_evaluate(X, y, search_estimators, search_params, scoring='roc_auc', 
         Dictionary whose keys are models names and values are the best scores of each model
     '''
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_proportion, random_state=42)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_proportion, random_state=42)
 
     best_estimators = {}
     scores = {}
-
     for n, pipe in search_estimators.items():
         clf = GridSearchCV(pipe, search_params[n], cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
         clf.fit(X_train, y_train)
