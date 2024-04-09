@@ -2,6 +2,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.pipeline import Pipeline
+# from imblearn.pipeline import Pipeline
 
 from helpers.models import models
 

@@ -1,19 +1,22 @@
 import pandas as pd
 import numpy as np
 
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import get_scorer#roc_auc_score, accuracy_score, f1_score, 
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
+from sklearn.metrics import get_scorer
+from sklearn.model_selection import GridSearchCV
 
 
 def preprocess_adult(df):
     df.replace('?', np.nan, inplace=True)
+    df.dropna(inplace=True)
+    df.drop_duplicates(inplace=True)
 
     le = LabelEncoder()
     df['income'] = le.fit_transform(df['income'])
 
-    df.dropna(inplace=True)
-    df.drop_duplicates(inplace=True)
+    # oe = OrdinalEncoder()
+    # str_cols = df.select_dtypes(include='object').columns.tolist()
+    # df[str_cols] = oe.fit_transform(df[str_cols])
 
     df.drop(['educational-num', 'capital-gain', 'capital-loss'], axis=1, inplace=True)
 
@@ -36,7 +39,7 @@ def evaluate_model(model, X_test, y_test, scoring):
 
 
 
-def fit_and_evaluate(X_train, y_train,X_test,y_test, search_estimators, search_params, scoring='roc_auc', test_size_proportion=0.33, verbosity=0):
+def fit_and_evaluate(X_train, y_train, X_test, y_test, search_estimators, search_params, scoring='roc_auc', verbosity=0):
     ''' fit and evaluate several models
     
     Parameters
@@ -77,8 +80,6 @@ def fit_and_evaluate(X_train, y_train,X_test,y_test, search_estimators, search_p
         Dictionary whose keys are models names and values are the best scores of each model
     '''
     
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_proportion, random_state=42)
-
     best_estimators = {}
     scores = {}
     for n, pipe in search_estimators.items():
