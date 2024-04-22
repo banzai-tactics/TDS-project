@@ -1,3 +1,4 @@
+import itertools
 import pandas as pd
 import numpy as np
 
@@ -22,6 +23,13 @@ def preprocess_adult(df):
 
     return df
 
+def preprocess_german(df):
+    df.fillna('NA', inplace=True)
+
+    le = LabelEncoder()
+    df['Risk'] = le.fit_transform(df['Risk'])
+
+    return df
 
 def evaluate_model(model, X_test, y_test, scoring):
     scorer = get_scorer(scoring)._score_func    
@@ -36,7 +44,6 @@ def evaluate_model(model, X_test, y_test, scoring):
 
     score = max(score_probas, score_preds)
     return score
-
 
 
 def fit_and_evaluate(X_train, y_train, X_test, y_test, search_estimators, search_params, scoring='roc_auc', verbosity=0):
@@ -76,14 +83,14 @@ def fit_and_evaluate(X_train, y_train, X_test, y_test, search_estimators, search
     best_estimators: dict
         Dictionary whose keys are models names and values are the best estimators we found
     
-    best_estimators: dict
+    scores: dict
         Dictionary whose keys are models names and values are the best scores of each model
     '''
     
     best_estimators = {}
     scores = {}
     for n, pipe in search_estimators.items():
-        clf = GridSearchCV(pipe, search_params[n], cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
+        clf = GridSearchCV(pipe, search_params.get(n, []), cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
         clf.fit(X_train, y_train)
         n_best_model = clf.best_estimator_
         score = evaluate_model(n_best_model, X_test, y_test, scoring)
@@ -91,3 +98,17 @@ def fit_and_evaluate(X_train, y_train, X_test, y_test, search_estimators, search
         scores[n] = score
 
     return best_estimators, scores
+
+
+def get_settings_options(params_dict):
+    '''return a dictionary with all settings to run'''
+    full_settings = {}
+    methods = params_dict['augment_methods']
+    for m in methods:
+        method_params = [p for p in params_dict.keys() if m in p.split('__', -1)[:-1]]
+        other_params = [p for p in params_dict.keys() if ('__' not in p) and (p!='augment_methods')]
+        all_m_params = other_params + method_params
+        all_m_params_values = [params_dict[p] for p in all_m_params]
+        m_settings = list(itertools.product(*all_m_params_values))
+        full_settings[m] = m_settings
+    return full_settings
