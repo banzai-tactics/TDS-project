@@ -4,7 +4,7 @@ from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.pipeline import Pipeline
 # from imblearn.pipeline import Pipeline
 
-from helpers.models import models, regression_models
+from helpers.models import models, regression_models, multiclass_models
 
 
 numerical_pipe = Pipeline([
@@ -35,6 +35,16 @@ def get_adult_pipelines():
 def get_regression_pipelines():
     pipelines = {}
     for n, model in regression_models.items():
+        pipelines[n] = Pipeline([
+            ('column_transformer', preprocessor),
+            ('model', model)
+        ])
+    return pipelines
+
+
+def get_multiclass_pipelines():
+    pipelines = {}
+    for n, model in multiclass_models.items():
         pipelines[n] = Pipeline([
             ('column_transformer', preprocessor),
             ('model', model)

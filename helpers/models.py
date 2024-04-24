@@ -57,3 +57,8 @@ regression_parameters = {
         'model__learning_rate': [0.05, 0.1, 0.3, 0.5],  
     }
 }
+
+multiclass_models = {
+    'rf': RandomForestClassifier(random_state=42),
+    'xgb': XGBClassifier(random_state=42)
+}
