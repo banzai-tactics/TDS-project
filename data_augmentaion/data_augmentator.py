@@ -267,8 +267,8 @@ class DataAugmentor(object):
         closed_list = []
         i = 0
         while cf_counter < size:
-            if (i%print_progress) == 0: # print progression
-                print(f'{i}/{size}') 
+            if (cf_counter%print_progress) == 0: # print progression
+                print(f'{cf_counter}/{size}') 
             if i%len(X_pool) in closed_list: # if we saw this record and we didnt succeeded to generate cf
                 i+=1 # iterate to next one
                 continue # skip to next one
