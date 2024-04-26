@@ -12,7 +12,7 @@ import random
 
 import resreg
 
-from imblearn.over_sampling import RandomOverSampler, SMOTENC
+from imblearn.over_sampling import RandomOverSampler, SMOTE, SMOTENC, SMOTEN
 
 
 class DataAugmentor(object):
@@ -52,7 +52,7 @@ class DataAugmentor(object):
     kw_args : dict, default=None
         Dictionary of additional keyword arguments to pass to func.
         '''
-    def __init__(self, X_train, y_train, X_test, y_test, continuous_feats, method='cf_random', regression=False, cf_scoring=None, kw_args={}):
+    def __init__(self, X_train, y_train, X_test, y_test, continuous_feats=[], method='cf_random', regression=False, cf_scoring=None, kw_args={}):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -155,7 +155,12 @@ class DataAugmentor(object):
                 X_train_augmented = pd.DataFrame(X_train_augmented, columns=self.X_train.columns).astype(self.X_train.dtypes)
                 y_train_augmented = pd.Series(y_train_augmented, name=self.y_train.name)
             else:
-                sampler = SMOTENC(random_state=42, categorical_features=self.categorical_feats) # resample all classes but the majority class
+                if not self.continuous_feats: # SMOTENC not designed to work with only categorical features
+                    sampler = SMOTEN(random_state=42)
+                elif not self.categorical_feats: # SMOTENC not designed to work with only numerical features
+                    sampler = SMOTE(random_state=42)
+                else: # if its mix features
+                    sampler = SMOTENC(random_state=42, categorical_features=self.categorical_feats) # resample all classes but the majority class
                 X_train_augmented, y_train_augmented = sampler.fit_resample(self.X_train, self.y_train)
 
         else:
@@ -173,8 +178,12 @@ class DataAugmentor(object):
             else: # classification
                 additional_samples = ((self.y_train.value_counts(normalize=True))*(num_of_samples)).astype(int)
                 sample_strategy = (additional_samples + self.y_train.value_counts()).to_dict()
-                sampler = SMOTENC(random_state=42, categorical_features=self.categorical_feats,
-                                  sampling_strategy=sample_strategy)
+                if not self.continuous_feats: # SMOTENC not designed to work with only categorical features
+                    sampler = SMOTEN(random_state=42)
+                elif not self.categorical_feats: # SMOTENC not designed to work with only numerical features
+                    sampler = SMOTE(random_state=42)
+                else: # if its mix features
+                    sampler = SMOTENC(random_state=42, categorical_features=self.categorical_feats)
                 X_train_augmented, y_train_augmented = sampler.fit_resample(self.X_train, self.y_train)
 
         return X_train_augmented, y_train_augmented
@@ -314,7 +323,7 @@ class DataAugmentor(object):
         query_class = y.iloc[idx]
         classes_counts = y.value_counts()
         relevant_class = classes_counts[classes_counts.index!=query_class]
-        different_class = random.sample(relevant_class.index, 1, counts=relevant_class.values)
+        different_class = random.sample(relevant_class.index.to_list(), 1, counts=relevant_class.values.tolist())[0]
         return different_class
     
 
