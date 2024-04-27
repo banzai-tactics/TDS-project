@@ -65,6 +65,7 @@ class DataAugmentor(object):
 
         self.df_train = pd.concat([X_train, y_train], axis=1)
         self.categorical_feats = [c for c in X_train.columns if c not in self.continuous_feats]
+        print(f'categorical_feats: {self.categorical_feats}')
 
                  
     def augment(self, balance=True, size=0.5):
