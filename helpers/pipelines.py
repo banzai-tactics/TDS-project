@@ -23,7 +23,7 @@ preprocessor = ColumnTransformer([
     ('categorical', categorical_pipe, make_column_selector(dtype_include=['object'])),
 ])
 
-def get_adult_pipelines():
+def get_classification_pipelines():
     pipelines = {}
     for n, model in models.items():
         pipelines[n] = Pipeline([
