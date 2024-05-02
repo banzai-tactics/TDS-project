@@ -2,6 +2,7 @@ import itertools
 import pandas as pd
 import numpy as np
 
+from sklearn.base import clone
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import GridSearchCV
@@ -32,17 +33,20 @@ def preprocess_german(df):
     return df
 
 def evaluate_model(model, X_test, y_test, scoring):
-    scorer = get_scorer(scoring)._score_func    
-    try:
-        score_probas = scorer(y_test, model.predict_proba(X_test)[:, 1]) 
-    except:
-        score_probas = 0
-    try:
-        score_preds = scorer(y_test, model.predict(X_test)) 
-    except:
-        score_preds = 0
+    # scorer = get_scorer(scoring)._score_func    
+    # try:
+    #     score_probas = scorer(y_test, model.predict_proba(X_test)[:, 1]) 
+    # except:
+    #     score_probas = 0
+    # try:
+    #     score_preds = scorer(y_test, model.predict(X_test)) 
+    # except:
+    #     score_preds = 0
 
-    score = max(score_probas, score_preds)
+    # score = max(score_probas, score_preds)
+    # NEW
+    scorer = get_scorer(scoring)   
+    score = scorer(model, X_test, y_test)
     return score
 
 
@@ -90,12 +94,30 @@ def fit_and_evaluate(X_train, y_train, X_test, y_test, search_estimators, search
     best_estimators = {}
     scores = {}
     for n, pipe in search_estimators.items():
-        clf = GridSearchCV(pipe, search_params.get(n, []), cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
+        # clf = GridSearchCV(pipe, search_params.get(n, []), cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity)
+        # clf.fit(X_train, y_train)
+        # n_best_model = clf.best_estimator_
+        # score = evaluate_model(n_best_model, X_test, y_test, scoring)
+        # best_estimators[n] = n_best_model
+        # scores[n] = score
+        # NEW
+        if isinstance(scoring, str):
+            scoring = [scoring]
+        clf = GridSearchCV(pipe, search_params.get(n, []), cv=3, scoring=scoring, return_train_score=True, n_jobs=-1, verbose=verbosity, refit=False)
         clf.fit(X_train, y_train)
-        n_best_model = clf.best_estimator_
-        score = evaluate_model(n_best_model, X_test, y_test, scoring)
-        best_estimators[n] = n_best_model
-        scores[n] = score
+
+        best_indexes = {s: np.argmax(clf.cv_results_[f'mean_test_{s}']) for s in scoring}
+
+        best_params = {s: clf.cv_results_['params'][best_indexes[s]] for s in scoring}
+
+        n_best_models = {s: clone(pipe).set_params(**best_params[s]) for s in scoring}
+        n_best_models = {s: p.fit(X_train, y_train) for s, p in n_best_models.items()}
+
+        n_scores = {s: evaluate_model(n_best_models[s], X_test, y_test, s) for s in scoring}
+
+        best_estimators[n] = n_best_models
+        scores[n] = n_scores
+
 
     return best_estimators, scores
 

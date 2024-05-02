@@ -65,7 +65,6 @@ class DataAugmentor(object):
 
         self.df_train = pd.concat([X_train, y_train], axis=1)
         self.categorical_feats = [c for c in X_train.columns if c not in self.continuous_feats]
-        print(f'categorical_feats: {self.categorical_feats}')
 
                  
     def augment(self, balance=True, size=0.5):
@@ -207,26 +206,55 @@ class DataAugmentor(object):
         TODO: now its knn (both classification and regression). in the future add support for others
         '''
         if self.regression:
+            # cf_model_pipeline = {'cf': Pipeline([('column_transformer', pipelines.preprocessor),
+            #                                      ('model', KNeighborsRegressor())])}
+            # cf_model_params = {'cf': {'model__n_neighbors': list(range(1,21)), 
+            #                         'model__weights': ['uniform', 'distance'],
+            #                         'model__p': [1,2],
+            #                         'model__algorithm': ['ball_tree', 'kd_tree', 'brute'],}}
+            #
+            ###########
+            from lightgbm import LGBMRegressor
             cf_model_pipeline = {'cf': Pipeline([('column_transformer', pipelines.preprocessor),
-                                                 ('model', KNeighborsRegressor())])}
+                                                ('model', LGBMRegressor(random_state=42, verbose=-1))])}
+            cf_model_params = {'cf': {'model__max_depth': [5, 6, 7],
+                                  'model__min_child_samples': [30, 50], 
+                                  'model__num_leaves': [25, 55], 
+                                  'model__learning_rate': [0.1, 0.3, 0.5],
+                                  'model__reg_lambda': [0, 0.5, 1.5, 3],}}
+            ###########
+            #
             if self.cf_scoring is None: # default score is rmse
                 self.cf_scoring = 'neg_root_mean_squared_error'
         else: # if classification
+            # cf_model_pipeline = {'cf': Pipeline([('column_transformer', pipelines.preprocessor),
+            #                                     ('model', KNeighborsClassifier())])}
+            ###########
+            from lightgbm import LGBMClassifier
             cf_model_pipeline = {'cf': Pipeline([('column_transformer', pipelines.preprocessor),
-                                                ('model', KNeighborsClassifier())])}
+                                                ('model', LGBMClassifier(random_state=42, verbose=-1))])}
+            cf_model_params = {'cf': {'model__max_depth': [5, 6, 7],
+                                  'model__min_child_samples': [30, 50], 
+                                  'model__num_leaves': [25, 55], 
+                                  'model__learning_rate': [0.1, 0.3, 0.5],
+                                  'model__reg_lambda': [0, 0.5, 1.5, 3],}}
+            ###########
+            #
             if self.cf_scoring is None: # default score is f1
                 self.cf_scoring = 'f1'
-        cf_model_params = {'cf': {'model__n_neighbors': list(range(1,21)), 
-                                    'model__weights': ['uniform', 'distance'],
-                                    'model__p': [1,2],
-                                    'model__algorithm': ['ball_tree', 'kd_tree', 'brute'],}}
+        # cf_model_params = {'cf': {'model__n_neighbors': list(range(1,21)), 
+        #                             'model__weights': ['uniform', 'distance'],
+        #                             'model__p': [1,2],
+        #                             'model__algorithm': ['ball_tree', 'kd_tree', 'brute'],}}
+        #
+        ###########
         best_cf_estimator, sampled_scores = utils.fit_and_evaluate(self.X_train, self.y_train, 
                                                                    self.X_test, self.y_test,
                                                                    search_estimators=cf_model_pipeline,
                                                                    search_params=cf_model_params,
                                                                    scoring=self.cf_scoring)
-        # print(f'model for cf {self.cf_scoring} score: {sampled_scores}')
-        return best_cf_estimator['cf']
+        print(f'model for cf {self.cf_scoring} score: {sampled_scores}')
+        return best_cf_estimator['cf'][self.cf_scoring]
 
 
     def _create_cf(self, X_pool, size, cf_model, desired_y=None, print_progress=50):
@@ -281,7 +309,7 @@ class DataAugmentor(object):
                     elif len(self.y_train.unique())>2: # if multiclass
                         self.kw_args['desired_class'] = self._get_desired_multi_class(self.y_train[X_pool.index], index)
 
-                e1 = exp.generate_counterfactuals(X_pool.iloc[[index]], **self.kw_args) # proximity_weight=1, diversity_weight=0
+                e1 = exp.generate_counterfactuals(X_pool.iloc[[index]], **self.kw_args)
                 cf_df = e1.cf_examples_list[0].final_cfs_df # result cf
                 # if cf_df[target].iloc[0]!=minority_class: continue
                 cf_augmented_data = pd.concat([cf_augmented_data, cf_df])
