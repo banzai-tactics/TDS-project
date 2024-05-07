@@ -398,6 +398,7 @@ class DataAugmentor(object):
             num_ones = int(size * 0.49) # ones need to be less than zeroes
             num_zeroes = size - num_ones
             relevance = [1] * num_ones + [0] * num_zeroes
+            random.seed(42)
             random.shuffle(relevance)
 
         return relevance
