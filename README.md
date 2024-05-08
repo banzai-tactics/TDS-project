@@ -23,7 +23,7 @@ This works for any type of data - binary classification, multi-class classificat
 * Random over sampling
 * SMOTE
 * counterfactuals method: three Model-agnostic methods:
-* * Randomized sampling
+  * Randomized sampling
   * KD-Tree (for counterfactuals within the training data)
   * Genetic algorithm
 
