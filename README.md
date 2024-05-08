@@ -20,11 +20,11 @@ X_train_augmented_balanced, y_train_augmented_balanced = augmentor.augment(balan
 ```
 
 # Supported methods for augmenting data
-We implemented all-in-one Object to augment the data with different oversampling methods. Each method can be utilized in to ways, either to balance the data or to sample randomly from it. Note that in counterfactual methods, you cant balance regression task.  
+We implemented all-in-one Object to augment the data with different oversampling methods. Each method can be utilized in two ways, either to balance the data or to sample randomly from it. Note that in counterfactual methods, you cant balance regression task.  
 This works for any type of data - binary classification, multi-class classification and regression. the supported methods are:
 * Random over sampling
 * SMOTE
-* counterfactuals method: three Model-agnostic methods:
+* counterfactuals method (three Model-agnostic methods):
   * Randomized sampling
   * KD-Tree (for counterfactuals within the training data)
   * Genetic algorithm
