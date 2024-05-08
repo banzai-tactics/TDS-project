@@ -8,7 +8,7 @@ To improve performance on small and imbalanced dataset by over sampling using co
 Using our method is very easy. There are two simple steps, first you need to initiate a `DataAugmentor` object, providing it all the relevant parameters, such the data to augment and which method to augment. Second, use the `augment` method to return the augmented data.
 
 ## Example usage
-```
+```python
 # split data etc
 augmentor = DataAugmentor(X_train, y_train, X_test, y_test,
                          method='cf_random', regression=False,
