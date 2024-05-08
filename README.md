@@ -5,7 +5,7 @@ Final project in Tabular Data Science course
 To improve performance on small and imbalanced dataset by over sampling using counterfactuals explanations method
 
 # Getting started
-Using our method is very easy. There are two simple steps, first you need to initiate a DataAugmentor object, providing it all the relevant parameters, such the data to augment and which method to augment. Second, use the `augment` method to return the augmented data.
+Using our method is very easy. There are two simple steps, first you need to initiate a `DataAugmentor` object, providing it all the relevant parameters, such the data to augment and which method to augment. Second, use the `augment` method to return the augmented data.
 
 ## Example usage
 ```
