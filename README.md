@@ -1,8 +1,10 @@
 # Data augmentation using counterfactuals
-Final project in Tabular Data Science course
+Final project in Tabular Data Science course  
+Goal: To improve performance on small and imbalanced datasets by over sampling using counterfactuals explanations methods.
 
-# Goal
-To improve performance on small and imbalanced dataset by over sampling using counterfactuals explanations method
+# Installations
+The relevant packages to run the project are specified in `requirements.txt` and can be seen below in [Requirements Section.](#requirements)
+For mac compatability, first do `brew install libomp`
 
 # Getting started
 Using our method is very easy. There are two simple steps, first you need to initiate a `DataAugmentor` object, providing it all the relevant parameters, such the data to augment and which method to augment. Second, use the `augment` method to return the augmented data.
@@ -27,8 +29,8 @@ This works for any type of data - binary classification, multi-class classificat
   * KD-Tree (for counterfactuals within the training data)
   * Genetic algorithm
 
-## Requirements
-Can be seen in `requirements.txt`:
+
+# Requirements
 * dice_ml==0.11
 * imbalanced_learn==0.12.2
 * Jinja2==3.1.3
@@ -39,8 +41,3 @@ Can be seen in `requirements.txt`:
 * resreg==0.2
 * scikit_learn==1.4.1.post1
 * xgboost==2.0.3
-
-
-
-# Error handling - on Mac with M1/2 
-when installing lightgbm first do brew install libomp
