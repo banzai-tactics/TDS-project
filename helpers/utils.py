@@ -206,10 +206,11 @@ def save_results_as_latex_tables(results, task_name):
             f.write(latex)
 
 
-def bar_plot(results, save_task_name=None):
+def bar_plot(results, save_task_name=None, model=None):
     models_dict = {'lr': 'Linear Regression', 'ridge': 'Ridge', 'lasso': 'Lasso', 'rf': 'Random Forest', 'xgb': 'XGBoost'}
     reshape_df = results.stack(level=0)
-    for model in results.index:
+    models_to_plot = [model] if model else results.index
+    for model in models_to_plot:
         model_df = reshape_df.xs(model)
         metrics = model_df.columns
         num_of_metrics = len(metrics)
