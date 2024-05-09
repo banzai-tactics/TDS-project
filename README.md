@@ -19,7 +19,7 @@ Using our method is very easy. There are two simple steps, first you need to ini
 
 ## Example usage
 ```python
-# ...split data etc
+# ...split data and etc.
 augmentor = DataAugmentor(X_train, y_train, X_test, y_test,
                          method='cf_random', regression=False,
                          continuous_feats=[feat1, feat2, feat3],
