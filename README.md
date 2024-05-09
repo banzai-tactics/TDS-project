@@ -33,7 +33,7 @@ For further information, here are some deeper experiments, on different datasets
 * [Diabetes](experiments/regression.ipynb) Dataset - augmenting for regression tasks.
 
 # Supported methods for augmenting data
-We implemented all-in-one Object to augment the data with different oversampling methods. Each method can be utilized in two ways, either to balance the data or to sample randomly from it. Note that in counterfactual methods, you cant balance regression task.  
+We implemented all-in-one Object to augment the data with different oversampling methods. Each method can be utilized in two ways, either to balance the data or to sample randomly from it. Note that in counterfactual methods, you can't balance regression task.  
 This works for any type of data - binary classification, multi-class classification and regression. the supported methods are:
 * Random over sampling
 * SMOTE
