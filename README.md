@@ -18,6 +18,11 @@ augmentor = DataAugmentor(X_train, y_train, X_test, y_test,
                          )
 X_train_augmented_balanced, y_train_augmented_balanced = augmentor.augment(balance=True)
 ```
+For more details, check out the [introduction notebook](data_augmentation_intro.ipynb).  
+For further information, here are some deeper experiments, on different datasets:
+* [Adult Income](experiments/classification_adult.ipynb) and [German Credit](experiments/experiment(german).ipynb) Datasets - augmenting for binary classification tasks.
+* [Cirrhosis Prediction](experiments/multi-cirrhosis.ipynb) and [Synthetic](experiments/multi-artificial.ipynb) Dataset - augmenting for multi-class classification tasks.
+* [Diabetes](experiments/regression.ipynb) Dataset - augmenting for regression tasks.
 
 # Supported methods for augmenting data
 We implemented all-in-one Object to augment the data with different oversampling methods. Each method can be utilized in two ways, either to balance the data or to sample randomly from it. Note that in counterfactual methods, you cant balance regression task.  
