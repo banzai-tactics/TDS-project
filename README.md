@@ -1,6 +1,14 @@
 # Data augmentation using counterfactuals
 Final project in Tabular Data Science course  
-Goal: To improve performance on small and imbalanced datasets by over sampling using counterfactuals explanations methods.
+
+# Goal
+To improve performance on small and imbalanced datasets by over sampling using counterfactuals explanations methods.
+
+# Background
+Small and imbalanced datasets are a big problem. They are suffer from similar challenges such that they may not generalize well, tend to overfit, biased and lacked performance.  
+Sometimes augment the dataset can remedy some of the challenges.  
+Our implementation of all-in-one DataAugmentor, including our novel implemetation using counterfactuals examples can help to tackle those challenges.  
+The solution is model and data agnostic (works for all complex models and all kind of datasets).
 
 # Installations
 The relevant packages to run the project are specified in `requirements.txt` and can be seen below in [Requirements Section.](#requirements)
