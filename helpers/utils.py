@@ -224,7 +224,7 @@ def bar_plot(results, save_task_name=None, wanted_models=None, wanted_metrics=No
             axes[i].tick_params(axis='x', labelrotation=45, labelsize=20)
         fig.suptitle(models_dict[model], fontsize=24)
         if save_task_name:
-            plt.savefig(f'../graphs/{save_task_name}/{models_dict[model]}.png')
+            plt.savefig(f'../graphs/{save_task_name}/{models_dict[model]}.png', bbox_inches='tight')
         plt.show()
 
 
