@@ -1,4 +1,4 @@
-# Data augmentation using counterfactuals
+# Data augmentation using Counterfactuals explanations
 Final project in Tabular Data Science course  
 
 # Goal
