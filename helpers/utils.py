@@ -206,20 +206,23 @@ def save_results_as_latex_tables(results, task_name):
             f.write(latex)
 
 
-def bar_plot(results, save_task_name=None, model=None):
+def bar_plot(results, save_task_name=None, wanted_models=None, wanted_metrics=None, wanted_methods=None):
     models_dict = {'lr': 'Linear Regression', 'ridge': 'Ridge', 'lasso': 'Lasso', 'rf': 'Random Forest', 'xgb': 'XGBoost'}
     reshape_df = results.stack(level=0)
-    models_to_plot = [model] if model else results.index
+    models_to_plot = wanted_models if wanted_models else results.index
     for model in models_to_plot:
         model_df = reshape_df.xs(model)
-        metrics = model_df.columns
+        if wanted_methods:
+            model_df = model_df.loc[wanted_methods]
+        metrics = wanted_metrics if wanted_metrics else model_df.columns
         num_of_metrics = len(metrics)
-        fig, axes = plt.subplots(1, num_of_metrics, figsize=(16, 6))#, figsize=(6, 16)
+        fig, axes = plt.subplots(1, num_of_metrics, figsize=(24, 6))
+        if num_of_metrics==1: axes =[axes]
         for i, m in enumerate(metrics):
             axes[i].bar(model_df.index, model_df[m])
-            axes[i].set_title(m)
-            axes[i].tick_params(axis='x', labelrotation=45)
-        fig.suptitle(models_dict[model], fontsize=16)
+            axes[i].set_title(m, fontsize=20)
+            axes[i].tick_params(axis='x', labelrotation=45, labelsize=20)
+        fig.suptitle(models_dict[model], fontsize=24)
         if save_task_name:
             plt.savefig(f'../graphs/{save_task_name}/{models_dict[model]}.png')
         plt.show()
