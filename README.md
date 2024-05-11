@@ -5,7 +5,7 @@ Final project in Tabular Data Science course
 To improve performance on small and imbalanced datasets by over sampling using counterfactual methods.
 
 # Background
-Small and imbalanced datasets pose a big problem for real day to day usage. They lack the ability to  generalize well, tend to overfit, be biased and lack in performance.
+Small and imbalanced datasets pose a difficult problem for real day to day usage. The models lack the ability to  generalize well, tend to overfit, be biased and lack in performance.
 One popular way of solving these issues is by augumenting the data. In this project we use counterfactuals which originated from the eXplainapiltiy field to augement the data.
  
 This solution is model and data agnostic and improves performance compared to previous methods.
